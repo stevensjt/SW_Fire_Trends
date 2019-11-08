@@ -1,6 +1,5 @@
-
-## Author: Sean Parks; sean_parks@fs.fed.us
-## Date: 3/1/2018
+## This code was developed by Sean Parks and has been modified by Jens Stevens to run on the SW Fires Database assembled by Megan Singleton.
+## Date: 7/14/19
 
 ## Purpose: This is an attempt to recreate the methodology described in Stevens et al. (2017; Alternative characterization of forest fire regimes: incorperating spatial patterns; Landscape Ecology).
 ## Stevens et al. propose a fire-based severity metric, called the stand-replacing decay coefficient (SDC) that is concerned with the size and shape of high severity patches.
@@ -8,8 +7,6 @@
 ## This code and approach is not necessarily better, but does not depend on converting rasters to polygons within or outside of R.
 ## I believe this code runs faster than the polygon-based code distributed by Stevens et al.
 
-## This code has been modified by Jens Stevens to run on the SW Fires Database assembled by Megan Singleton.
-## Date: 7/14/19
 
 library(raster)
 #library(FNN) #Deprecated?
