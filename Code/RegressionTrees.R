@@ -6,30 +6,50 @@ library(RColorBrewer) #for brewer.pal(); version 1.1-2
 library(grid) #for viewport(); version 3.4.3
 
 
-####Read and process data####
+####1. Read and process data####
 #d <- read.csv("./Data/master_list_metrics.csv")
 d <- read.csv("./Data/master_list_metrics_with_unknowns.csv") #Using unknowns file because same length as climate file so more straightforward merge. Can edit later.
 d_climate <- read.csv("./Data/Processed Data/sdc_df_climate.csv")
+names(d_climate)[1] <- "FIRE_NAME" #For consistent nomenclature
 
 ##Process master data file for merging
-d_climate$FIRE_NAME <- as.character(d_climate$fire.name)
+d_climate$FIRE_NAME <- as.character(d_climate$FIRE_NAME)
 d$FIRE_NAME<-as.character(d$FIRE_NAME)
 for(i in 1:nrow(d_climate)){
-  d_climate$FIRE_NAME[i] <- gsub( "_1.*$", "", (d_climate$FIRE_NAME[i] ))
+  d_climate$FIRE_NAME[i] <- gsub( "_1.*$", "", (d_climate$FIRE_NAME[i] )) 
   d_climate$FIRE_NAME[i] <- gsub( "_2.*$", "", (d_climate$FIRE_NAME[i] ))
-    #paste(paste(sapply(strsplit(d$FIRE_NAME[i], "_"), function(x) x[c(2,3)])),collapse = "_")
+    #This removes the extra characters after the fire name,
+    #from fires in 1900's (first line) and fires in 2000's (second line)
+}
+for(i in 1:nrow(d)){
+  d$FIRE_NAME[i] <- gsub( "_1.*$", "", (d$FIRE_NAME[i] )) 
+  d$FIRE_NAME[i] <- gsub( "_2.*$", "", (d$FIRE_NAME[i] ))
+  #And do the same for the master data frame, which seems to have some extraneous "_2"'s
+  
 }
 
-d <-merge.data.frame(d,d_climate,by = "FIRE_NAME")
+d2 <-merge.data.frame(d,d_climate,by = "FIRE_NAME")
 #Notes: 
 #1)This is messy because I did it quickly. Adding in the climate data; the merge operation went from 575 lines to 512, need to figure out what happened to the missing files. *TODO
 #2)The SDC values in the merged file don't match exactly, I wonder if there was a rounding error somewhere along the way. Would be worth a look. *TODO
+#Problem fires:
 
-####Test code for regression trees####
+#az3345810987920150819_CREEK 2015 (not in Jens' file with weather data)
+#az3167810952819890704_SWISHELM (not in Jens' file with weather data)
+#az3150310908920150617_HOG (mislabeled in Megan's data as "nm"?)
+
+#Fires in Megan's dataset not in Jens':
+d$FIRE_NAME[which(!d$FIRE_NAME%in%d_climate$FIRE_NAME)]
+View(d[which(!d$FIRE_NAME%in%d_climate$FIRE_NAME),])
+#Fires in Jens's dataset not in Megan's:
+d_climate$FIRE_NAME[which(!d_climate$FIRE_NAME%in%d$FIRE_NAME)]
+View(d_climate[which(!d_climate$FIRE_NAME%in%d$FIRE_NAME),])
+
+####2. Test code for regression trees####
 potential_parms <- 
   c("FIRE_TYPE1","FIRE_TYPE2","AGBUR1","max_tmmx","max_tmmn","min_rmax","max_bi")
 
-####Model selection algorithm.####
+####2a. Model selection algorithm.####
 
 m_tph <- glmulti(y="SDC",  #m_tph can be changed, an artifact of imported code.
                  xr=potential_parms,
