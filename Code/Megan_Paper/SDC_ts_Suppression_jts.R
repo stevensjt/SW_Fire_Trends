@@ -21,7 +21,7 @@ loadfonts(device = "win")
 
 #setwd("D:/Patch_Metrics/GEE_Severity_Dataset/R/Time_Series/")
 ts_patch_metrics <- 
-  read.csv(file="./Data/Processed Data/GEE_1984_2017_final_patch_metrics.csv", header=TRUE, sep=",")
+  read.csv(file="./Data/GEE_1984_2017_final_patch_metrics_709.csv", header=TRUE, sep=",")
 names(ts_patch_metrics)
 attach(ts_patch_metrics)
 
@@ -174,11 +174,11 @@ for(r in 1:nrow(mean_sdc.df)){
   mean_sdc.df$n[r] <- 
     length(which(filter.df$YEAR==y))
 }
-pdf("./Figures/JTS_troubleshoot/1.SDC~sample_size.pdf")
+pdf("./Figures/JTS_troubleshoot/1.SDC~sample_size2.pdf")
 ggplot(mean_sdc.df)+
   geom_point(aes(x = n, y = SDC))
 dev.off()
-pdf("./Figures/JTS_troubleshoot/2.sample_size~year.pdf")
+pdf("./Figures/JTS_troubleshoot/2.sample_size~year2.pdf")
 ggplot(mean_sdc.df)+
   geom_point(aes(x = YEAR, y = n))
 dev.off()
@@ -188,7 +188,7 @@ dev.off()
 #Task 2: Look for anomalies in CA vs SDC (could replace CA with NDCA, and SDC with any of the other metrics, if interested, but need updated data frame)
 filter.df$CA_pct <-percent_rank(filter.df$CA)
 filter.df$SDC_pct <-percent_rank(filter.df$SDC)
-pdf("./Figures/JTS_troubleshoot/3.anomalies_SDCvsCA.pdf")
+pdf("./Figures/JTS_troubleshoot/3.anomalies_SDCvsCA2.pdf")
 ggplot(filter.df)+
   geom_point(aes(x = CA_pct, y = SDC_pct,col = YEAR))
 dev.off()
@@ -196,7 +196,7 @@ filter.df$SDC_CA_anomalies <-
   resid(lm(SDC_pct~CA_pct,data=filter.df))
 ggplot(filter.df)+
   geom_point(aes(x = CA_pct, y = SDC_pct,col = SDC_CA_anomalies))
-pdf("./Figures/JTS_troubleshoot/4.anomalies_SDC~year.pdf")
+pdf("./Figures/JTS_troubleshoot/4.anomalies_SDC~year2.pdf")
 ggplot(filter.df,aes(x = YEAR, y = SDC_CA_anomalies))+
   geom_point()+
   geom_smooth()
@@ -235,7 +235,7 @@ colnames(min_sdc.df)[colnames(min_sdc.df)=="Group.1"] <- "YEAR"
 colnames(min_sdc.df)[colnames(min_sdc.df)=="x"] <- "SDC"
 ##convert character data to numeric 
 min_sdc.df <- mutate_all(min_sdc.df, function(x) as.numeric(as.character(x)))
-pdf("./Figures/JTS_troubleshoot/5.min_SDC~year.pdf")
+pdf("./Figures/JTS_troubleshoot/5.min_SDC~year2.pdf")
 ggplot(min_sdc.df,aes(x = YEAR, y = SDC))+
   geom_point()+
   geom_smooth()+
